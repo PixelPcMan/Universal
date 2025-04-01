@@ -1,7 +1,6 @@
 local player = game.Players.LocalPlayer
-local RunService = game:GetService("RunService")
-
 local noclipEnabled = false
+
 local function toggleNoclip()
     noclipEnabled = not noclipEnabled
     for _, part in pairs(player.Character:GetDescendants()) do
@@ -11,7 +10,7 @@ local function toggleNoclip()
     end
 end
 
-RunService.Stepped:Connect(function()
+game:GetService("RunService").Stepped:Connect(function()
     if noclipEnabled and player.Character then
         for _, part in pairs(player.Character:GetDescendants()) do
             if part:IsA("BasePart") then
@@ -21,12 +20,11 @@ RunService.Stepped:Connect(function()
     end
 end)
 
-local function sendNotification(title, text, duration)
-    pcall(function()
-        game.StarterGui:SetCore("SendNotification", {
-            Title = title,
-            Text = text,
-            Duration = duration or 4
-        })
-    end)
-end
+    toggleNoclip()
+    local status = noclipEnabled and "Activado" or "Desactivado"
+    game.StarterGui:SetCore("SendNotification", {
+        Title = "NoClip Status",
+        Text = "NoClip está " .. status,
+        Duration = 4
+    })
+end)
