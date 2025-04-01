@@ -1,0 +1,33 @@
+-- NoClip variables
+local player = game.Players.LocalPlayer
+local noclipEnabled = false
+
+local function toggleNoclip()
+    noclipEnabled = not noclipEnabled
+    for _, part in pairs(player.Character:GetDescendants()) do
+        if part:IsA("BasePart") then
+            part.CanCollide = not noclipEnabled
+        end
+    end
+end
+
+game:GetService("RunService").Stepped:Connect(function()
+    if noclipEnabled and player.Character then
+        for _, part in pairs(player.Character:GetDescendants()) do
+            if part:IsA("BasePart") then
+                part.CanCollide = false
+            end
+        end
+    end
+end)
+
+-- Botón para activar/desactivar NoClip
+MainSection:NewButton("Toggle NoClip", "Activa o desactiva NoClip", function()
+    toggleNoclip()
+    local status = noclipEnabled and "Activado" or "Desactivado"
+    game.StarterGui:SetCore("SendNotification", {
+        Title = "NoClip Status",
+        Text = "NoClip está " .. status,
+        Duration = 4
+    })
+end)
