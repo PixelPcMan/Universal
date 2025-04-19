@@ -1,15 +1,16 @@
+-- LocalScript
+
 -- Función para ocultar todas las GUIs
 local function hideGuis()
+    -- Obtiene el jugador local
     local player = game.Players.LocalPlayer
-    local playerGui = player:WaitForChild("PlayerGui")
-
-    -- Iterar sobre todas las Gui en PlayerGui y ocultarlas
-    for _, gui in pairs(playerGui:GetChildren()) do
+    -- Itera sobre todas las GUIs en el PlayerGui
+    for _, gui in pairs(player.PlayerGui:GetChildren()) do
         if gui:IsA("ScreenGui") then
-            gui.Enabled = false
+            gui.Enabled = false -- Oculta la GUI
         end
     end
 end
 
--- Llamar a la función hideGuis al ejecutar el script
+-- Llama a la función para ocultar las GUIs
 hideGuis()
