@@ -2,14 +2,13 @@
 local player = game.Players.LocalPlayer
 local playerGui = player:WaitForChild("PlayerGui")
 
-local mainGui = script.Parent -- Aquí asumo que este es el ScreenGui con los botones
-local modifierFrame = mainGui:WaitForChild("ModifierFrame") -- El frame con Start, Spawn, Reset
-local openButton = mainGui:WaitForChild("OpenButton") -- Un TextButton que diga "Open"
+local mainGui = script.Parent -- Aquí está el ScreenGui
+local modifierFrame = mainGui:WaitForChild("ModifierFrame") -- Frame con los botones
+local openButton = mainGui:WaitForChild("OpenButton") -- Botón para abrir
 
--- Ocultamos el frame al inicio
+-- Ocultar al inicio
 modifierFrame.Visible = false
 
--- Abrir la interfaz con el botón "Open"
 openButton.MouseButton1Click:Connect(function()
 	modifierFrame.Visible = not modifierFrame.Visible
 end)
@@ -21,12 +20,25 @@ local humanoidRootPart = character:WaitForChild("HumanoidRootPart")
 local spawnButton = modifierFrame.SpawnModifier
 local startButton = modifierFrame.Start
 local resetButton = modifierFrame.Reset
+local timeButton = modifierFrame.TimeBox -- Este es el botón/cuadro donde dice "10"
 
 local partsFolder = Instance.new("Folder")
 partsFolder.Name = "SpawnedParts"
 partsFolder.Parent = workspace
 
 local partsList = {}
+local teleportTime = 10 -- valor inicial
+
+-- Cuando el jugador cambia el número en el botón/box
+timeButton.FocusLost:Connect(function(enterPressed)
+	local newTime = tonumber(timeButton.Text)
+	if newTime and newTime >= 0.1 then
+		teleportTime = newTime
+	else
+		-- Si pone algo inválido, regresa al valor anterior
+		timeButton.Text = tostring(teleportTime)
+	end
+end)
 
 -- Spawn Modifier
 spawnButton.MouseButton1Click:Connect(function()
@@ -38,22 +50,11 @@ spawnButton.MouseButton1Click:Connect(function()
 	table.insert(partsList, part)
 end)
 
--- Start con cuenta regresiva 10 → 0.1
+-- Start
 startButton.MouseButton1Click:Connect(function()
 	for i, part in ipairs(partsList) do
-		-- Cuenta atrás
-		for t = 10, 1, -1 do
-			print(t) -- Puedes mostrarlo en un TextLabel si quieres
-			task.wait(1)
-		end
-		-- Decimales
-		for d = 9, 1, -1 do
-			print("0."..d)
-			task.wait(0.1)
-		end
-		
-		-- Teletransportar al jugador
 		humanoidRootPart.CFrame = part.CFrame + Vector3.new(0,5,0)
+		task.wait(teleportTime) -- espera el tiempo que eligió el jugador
 	end
 end)
 
