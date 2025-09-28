@@ -1,0 +1,66 @@
+-- Gui setup
+local player = game.Players.LocalPlayer
+local playerGui = player:WaitForChild("PlayerGui")
+
+local mainGui = script.Parent -- Aquí asumo que este es el ScreenGui con los botones
+local modifierFrame = mainGui:WaitForChild("ModifierFrame") -- El frame con Start, Spawn, Reset
+local openButton = mainGui:WaitForChild("OpenButton") -- Un TextButton que diga "Open"
+
+-- Ocultamos el frame al inicio
+modifierFrame.Visible = false
+
+-- Abrir la interfaz con el botón "Open"
+openButton.MouseButton1Click:Connect(function()
+	modifierFrame.Visible = not modifierFrame.Visible
+end)
+
+-- Variables
+local character = player.Character or player.CharacterAdded:Wait()
+local humanoidRootPart = character:WaitForChild("HumanoidRootPart")
+
+local spawnButton = modifierFrame.SpawnModifier
+local startButton = modifierFrame.Start
+local resetButton = modifierFrame.Reset
+
+local partsFolder = Instance.new("Folder")
+partsFolder.Name = "SpawnedParts"
+partsFolder.Parent = workspace
+
+local partsList = {}
+
+-- Spawn Modifier
+spawnButton.MouseButton1Click:Connect(function()
+	local part = Instance.new("Part")
+	part.Size = Vector3.new(5,1,5)
+	part.Anchored = true
+	part.Position = humanoidRootPart.Position + Vector3.new(0,5 + #partsList * 5,0)
+	part.Parent = partsFolder
+	table.insert(partsList, part)
+end)
+
+-- Start con cuenta regresiva 10 → 0.1
+startButton.MouseButton1Click:Connect(function()
+	for i, part in ipairs(partsList) do
+		-- Cuenta atrás
+		for t = 10, 1, -1 do
+			print(t) -- Puedes mostrarlo en un TextLabel si quieres
+			task.wait(1)
+		end
+		-- Decimales
+		for d = 9, 1, -1 do
+			print("0."..d)
+			task.wait(0.1)
+		end
+		
+		-- Teletransportar al jugador
+		humanoidRootPart.CFrame = part.CFrame + Vector3.new(0,5,0)
+	end
+end)
+
+-- Reset
+resetButton.MouseButton1Click:Connect(function()
+	for _, part in ipairs(partsList) do
+		part:Destroy()
+	end
+	partsList = {}
+end)
