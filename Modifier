@@ -1,46 +1,47 @@
--- Gui setup
 local player = game.Players.LocalPlayer
 local playerGui = player:WaitForChild("PlayerGui")
 
-local mainGui = script.Parent -- Aquí está el ScreenGui
-local modifierFrame = mainGui:WaitForChild("ModifierFrame") -- Frame con los botones
-local openButton = mainGui:WaitForChild("OpenButton") -- Botón para abrir
+-- Referencias a la GUI
+local mainGui = script.Parent
+local modifierFrame = mainGui:WaitForChild("ModifierFrame")
+local openButton = mainGui:WaitForChild("OpenButton")
 
--- Ocultar al inicio
+-- Botones dentro del frame
+local spawnButton = modifierFrame:WaitForChild("SpawnModifier")
+local startButton = modifierFrame:WaitForChild("Start")
+local resetButton = modifierFrame:WaitForChild("Reset")
+local timeBox = modifierFrame:WaitForChild("TimeBox")
+
+-- Ocultamos el frame al inicio
 modifierFrame.Visible = false
 
+-- Abrir/cerrar con botón Open
 openButton.MouseButton1Click:Connect(function()
 	modifierFrame.Visible = not modifierFrame.Visible
 end)
 
--- Variables
+-- Variables de juego
 local character = player.Character or player.CharacterAdded:Wait()
 local humanoidRootPart = character:WaitForChild("HumanoidRootPart")
-
-local spawnButton = modifierFrame.SpawnModifier
-local startButton = modifierFrame.Start
-local resetButton = modifierFrame.Reset
-local timeButton = modifierFrame.TimeBox -- Este es el botón/cuadro donde dice "10"
 
 local partsFolder = Instance.new("Folder")
 partsFolder.Name = "SpawnedParts"
 partsFolder.Parent = workspace
 
 local partsList = {}
-local teleportTime = 10 -- valor inicial
+local teleportTime = 10
 
--- Cuando el jugador cambia el número en el botón/box
-timeButton.FocusLost:Connect(function(enterPressed)
-	local newTime = tonumber(timeButton.Text)
+-- Editar el tiempo desde la caja
+timeBox.FocusLost:Connect(function(enterPressed)
+	local newTime = tonumber(timeBox.Text)
 	if newTime and newTime >= 0.1 then
 		teleportTime = newTime
 	else
-		-- Si pone algo inválido, regresa al valor anterior
-		timeButton.Text = tostring(teleportTime)
+		timeBox.Text = tostring(teleportTime)
 	end
 end)
 
--- Spawn Modifier
+-- Botón Spawn Modifier
 spawnButton.MouseButton1Click:Connect(function()
 	local part = Instance.new("Part")
 	part.Size = Vector3.new(5,1,5)
@@ -50,15 +51,15 @@ spawnButton.MouseButton1Click:Connect(function()
 	table.insert(partsList, part)
 end)
 
--- Start
+-- Botón Start
 startButton.MouseButton1Click:Connect(function()
 	for i, part in ipairs(partsList) do
 		humanoidRootPart.CFrame = part.CFrame + Vector3.new(0,5,0)
-		task.wait(teleportTime) -- espera el tiempo que eligió el jugador
+		task.wait(teleportTime)
 	end
 end)
 
--- Reset
+-- Botón Reset
 resetButton.MouseButton1Click:Connect(function()
 	for _, part in ipairs(partsList) do
 		part:Destroy()
